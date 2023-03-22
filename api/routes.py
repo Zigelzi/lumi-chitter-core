@@ -35,6 +35,7 @@ def add_chit():
     response = {"status": status_msg_success, "data": {}}
     try:
         request_data = request.get_json()
+
         user = User.query.get(request_data["author"]["id"])
         if user:
             chit = chit_schema.load(request_data)
