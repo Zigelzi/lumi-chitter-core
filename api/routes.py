@@ -88,9 +88,12 @@ def add_user():
         request_data = request.get_json()
         user = db.session.execute(
             db.select(User).filter_by(handle=request_data["handle"])
-        ).scalar_one()
+        ).first()
         print(user)
+        print(request_data)
         if not user:
+            user = user_schema.load(request_data)
+            user.save()
             db.session.commit()
             response["message"] = "User added successfully!"
             response["user"] = user_schema.dump(user)
