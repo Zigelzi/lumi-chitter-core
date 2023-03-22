@@ -36,14 +36,18 @@ def add_chit():
     try:
         request_data = request.get_json()
         user = User.query.get(request_data["author"]["id"])
-        chit = chit_schema.load(request_data)
-        chit.author = user
-        chit.save()
-        db.session.commit()
-        response["data"]["chit"] = chit_schema.dump(chit)
-        response["message"] = "Chit added successfully!"
-
-        return make_response(jsonify(response), 200)
+        if user:
+            chit = chit_schema.load(request_data)
+            chit.author = user
+            chit.save()
+            db.session.commit()
+            response["data"]["chit"] = chit_schema.dump(chit)
+            response["message"] = "Chit added successfully!"
+            return make_response(jsonify(response), 200)
+        else:
+            response["status"] = status_msg_fail
+            response["message"] = "Author was not found"
+            return make_response(jsonify(response), 500)
     except Exception as e:
         traceback.print_exc()
         response["status"] = status_msg_fail
