@@ -2,17 +2,32 @@ import traceback
 from flask import make_response, jsonify, request
 
 from api import app, db
-from api.models import ChitSchema, UserSchema, User
+from api.models import ChitSchema, UserSchema, User, Chit
 
 # ---------------------------------
 # Marshmallow serialization schemas
 # ---------------------------------
 chit_schema = ChitSchema()
+chits_schema = ChitSchema(many=True)
 user_schema = UserSchema()
 
 # Status message descriptions
 status_msg_fail = "fail"
 status_msg_success = "success"
+
+
+@app.get("/chit/")
+def get_all_chits():
+    response = {"status": status_msg_success, "data": {}}
+    try:
+        chits = Chit.get_all()
+        response["data"]["chits"] = chits_schema.dump(chits)
+        response["message"] = "Chits queried successfully!"
+        return make_response(jsonify(response), 200)
+    except Exception as e:
+        response["status"] = status_msg_fail
+        response["message"] = "Something went wrong when trying to query all chits"
+        return make_response(jsonify(response), 500)
 
 
 @app.post("/chit/")
@@ -28,14 +43,10 @@ def add_chit():
         response["data"]["chit"] = chit_schema.dump(chit)
         response["message"] = "Chit added successfully!"
 
-        response_json = jsonify(response)
-
-        return make_response(response_json, 200)
+        return make_response(jsonify(response), 200)
     except Exception as e:
         traceback.print_exc()
         response["status"] = status_msg_fail
         response["message"] = "Something went wrong when trying to add chit"
         db.session.rollback()
-
-        response_json = jsonify(response)
-        return make_response(response_json, 500)
+        return make_response(jsonify(response), 500)
