@@ -89,8 +89,6 @@ def add_user():
         user = db.session.execute(
             db.select(User).filter_by(handle=request_data["handle"])
         ).first()
-        print(user)
-        print(request_data)
         if not user:
             user = user_schema.load(request_data)
             user.save()
