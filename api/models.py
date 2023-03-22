@@ -1,6 +1,7 @@
 from api import db, ma
 
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
+from marshmallow_sqlalchemy.fields import Nested
 
 
 class Chit(db.Model):
@@ -45,15 +46,17 @@ class User(db.Model):
 # ---------------------------------
 # Marshmallow serialization schemas
 # ---------------------------------
-class ChitSchema(SQLAlchemyAutoSchema):
+class UserSchema(SQLAlchemyAutoSchema):
     class Meta:
-        model = Chit
+        model = User
         load_instance = True
         sqla_session = db.session
 
 
-class UserSchema(SQLAlchemyAutoSchema):
+class ChitSchema(SQLAlchemyAutoSchema):
+    author = Nested(UserSchema)
+
     class Meta:
-        model = User
+        model = Chit
         load_instance = True
         sqla_session = db.session

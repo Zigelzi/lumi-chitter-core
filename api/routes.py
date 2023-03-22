@@ -2,12 +2,13 @@ import traceback
 from flask import make_response, jsonify, request
 
 from api import app, db
-from api.models import ChitSchema, Chit
+from api.models import ChitSchema, UserSchema, User
 
 # ---------------------------------
 # Marshmallow serialization schemas
 # ---------------------------------
 chit_schema = ChitSchema()
+user_schema = UserSchema()
 
 # Status message descriptions
 status_msg_fail = "fail"
@@ -17,10 +18,11 @@ status_msg_success = "success"
 @app.post("/chit/")
 def add_chit():
     response = {"status": status_msg_success, "data": {}}
-    print(request.get_json())
     try:
         request_data = request.get_json()
-        chit = chit_schema.load(request_data)
+        user = User.query.get(request_data["author"]["id"])
+        chit = chit_schema.load(request_data["chit"])
+        chit.author = user
         chit.save()
         db.session.commit()
         response["data"]["chit"] = chit_schema.dump(chit)
