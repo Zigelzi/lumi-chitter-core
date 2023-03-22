@@ -1,3 +1,4 @@
+import traceback
 from flask import make_response, jsonify, request
 
 from api import app, db
@@ -29,6 +30,7 @@ def add_chit():
 
         return make_response(response_json, 200)
     except Exception as e:
+        traceback.print_exc()
         response["status"] = status_msg_fail
         response["message"] = "Something went wrong when trying to add chit"
         db.session.rollback()
