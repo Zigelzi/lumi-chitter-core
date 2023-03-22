@@ -54,3 +54,25 @@ def add_chit():
         response["message"] = "Something went wrong when trying to add chit"
         db.session.rollback()
         return make_response(jsonify(response), 500)
+
+
+@app.delete("/chit/<int:chit_id>")
+def delete_chit(chit_id):
+    response = {"status": status_msg_success, "data": {}}
+    try:
+        chit = Chit.query.get(chit_id)
+        if chit:
+            db.session.delete(chit)
+            db.session.commit()
+            response["message"] = "Chit deleted successfully!"
+            return make_response(jsonify(response), 200)
+        else:
+            response["status"] = status_msg_fail
+            response["message"] = "Chit was not found"
+            return make_response(jsonify(response), 500)
+    except Exception as e:
+        traceback.print_exc()
+        response["status"] = status_msg_fail
+        response["message"] = "Something went wrong when trying to delete chit"
+        db.session.rollback()
+        return make_response(jsonify(response), 500)
