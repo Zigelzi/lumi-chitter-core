@@ -11,6 +11,6 @@ app.config.from_object(DevConfig)
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app)
 
 from api import routes, models

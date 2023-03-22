@@ -16,14 +16,13 @@ status_msg_success = "success"
 @app.post("/chit/")
 def add_chit():
     response = {"status": status_msg_success, "data": {}}
-
+    print(request.get_json())
     try:
         request_data = request.get_json()
         chit = chit_schema.load(request_data)
         chit.save()
         db.session.commit()
         response["data"]["chit"] = chit_schema.dump(chit)
-        print(response)
         response["message"] = "Chit added successfully!"
 
         response_json = jsonify(response)
