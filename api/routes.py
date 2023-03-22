@@ -21,7 +21,7 @@ def get_all_chits():
     response = {"status": status_msg_success, "data": {}}
     try:
         chits = Chit.get_all()
-        response["data"]["chits"] = chits_schema.dump(chits)
+        response["chits"] = chits_schema.dump(chits)
         response["message"] = "Chits queried successfully!"
         return make_response(jsonify(response), 200)
     except Exception as e:
@@ -35,12 +35,14 @@ def add_chit():
     response = {"status": status_msg_success, "data": {}}
     try:
         request_data = request.get_json()
+        print(request_data)
+
         user = db.session.get(User, request_data["author"]["id"])
         if user:
             chit = chit_schema.load(request_data)
             chit.save()
             db.session.commit()
-            response["data"]["chit"] = chit_schema.dump(chit)
+            response["chit"] = chit_schema.dump(chit)
             response["message"] = "Chit added successfully!"
             return make_response(jsonify(response), 200)
         else:
@@ -75,5 +77,33 @@ def delete_chit(chit_id):
         traceback.print_exc()
         response["status"] = status_msg_fail
         response["message"] = "Something went wrong when trying to delete chit"
+        db.session.rollback()
+        return make_response(jsonify(response), 500)
+
+
+@app.post("/user/")
+def add_user():
+    response = {"status": status_msg_success, "data": {}}
+    try:
+        request_data = request.get_json()
+        user = db.session.execute(
+            db.select(User).filter_by(handle=request_data["handle"])
+        ).scalar_one()
+        print(user)
+        if not user:
+            db.session.commit()
+            response["message"] = "User added successfully!"
+            response["user"] = user_schema.dump(user)
+            return make_response(jsonify(response), 200)
+        else:
+            response["status"] = status_msg_fail
+            response[
+                "message"
+            ] = "User with this handle already exists, select another handle."
+            return make_response(jsonify(response), 422)
+    except Exception as e:
+        traceback.print_exc()
+        response["status"] = status_msg_fail
+        response["message"] = "Something went wrong when trying to add user"
         db.session.rollback()
         return make_response(jsonify(response), 500)
