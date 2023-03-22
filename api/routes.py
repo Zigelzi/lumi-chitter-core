@@ -35,11 +35,9 @@ def add_chit():
     response = {"status": status_msg_success, "data": {}}
     try:
         request_data = request.get_json()
-
-        user = User.query.get(request_data["author"]["id"])
+        user = db.session.get(User, request_data["author"]["id"])
         if user:
             chit = chit_schema.load(request_data)
-            chit.author = user
             chit.save()
             db.session.commit()
             response["data"]["chit"] = chit_schema.dump(chit)
@@ -61,7 +59,9 @@ def add_chit():
 def delete_chit(chit_id):
     response = {"status": status_msg_success, "data": {}}
     try:
-        chit = Chit.query.get(chit_id)
+        request_data = request.get_json()
+        author = db.session.get(User, request_data["chit"]["author"]["id"])
+        chit = db.session.get(Chit, chit_id)
         if chit:
             db.session.delete(chit)
             db.session.commit()
