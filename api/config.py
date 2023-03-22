@@ -5,6 +5,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
     TESTING = False
+    SECRET_KEY = os.environ.get("SECRET_KEY", "this_is_not_secret")
 
 
 class DevConfig(Config):
