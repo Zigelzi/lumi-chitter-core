@@ -1,30 +1,38 @@
-from flask import make_response, jsonify
+from flask import make_response, jsonify, request
 
-from api import app
+from api import app, db
+from api.models import ChitSchema, Chit
+
+# ---------------------------------
+# Marshmallow serialization schemas
+# ---------------------------------
+chit_schema = ChitSchema()
 
 # Status message descriptions
 status_msg_fail = "fail"
 status_msg_success = "success"
 
-likes = []
 
+@app.post("/chit/")
+def add_chit():
+    response = {"status": status_msg_success, "data": {}}
 
-@app.get("/likes/<string:chit_id>")
-def get_likes(chit_id):
-    response = {"status": status_msg_success, "chit_id": chit_id}
-    print(response)
-    response_json = jsonify(response)
+    try:
+        request_data = request.get_json()
+        chit = chit_schema.load(request_data)
+        chit.save()
+        db.session.commit()
+        response["data"]["chit"] = chit_schema.dump(chit)
+        print(response)
+        response["message"] = "Chit added successfully!"
 
-    return make_response(response_json, 200)
+        response_json = jsonify(response)
 
+        return make_response(response_json, 200)
+    except Exception as e:
+        response["status"] = status_msg_fail
+        response["message"] = "Something went wrong when trying to add chit"
+        db.session.rollback()
 
-@app.post("/likes/<string:chit_id>")
-def add_like(chit_id):
-    response = {"status": status_msg_success, "chit_id": chit_id}
-    likes.append({"chit_id": chit_id})
-    response["likes"] = likes
-
-    response_json = jsonify(response)
-    print(likes)
-
-    return make_response(response_json, 200)
+        response_json = jsonify(response)
+        return make_response(response_json, 500)
