@@ -18,7 +18,7 @@ status_msg_success = "success"
 
 @app.get("/chit/")
 def get_all_chits():
-    response = {"status": status_msg_success, "data": {}}
+    response = {"status": status_msg_success}
     if not request.cookies.get("token"):
         response["status"] = status_msg_fail
         response["message"] = "Not authorized!"
@@ -100,6 +100,7 @@ def add_user():
             response["message"] = "User added successfully!"
             response["user"] = user_schema.dump(user)
             response["token"] = auth_token
+            print(auth_token)
             return make_response(jsonify(response), 200)
         else:
             response["status"] = status_msg_fail
