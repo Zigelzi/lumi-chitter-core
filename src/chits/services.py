@@ -14,3 +14,16 @@ def create_chit(data):
     chit.save()
     db.session.commit()
     return chit_schema.dump(chit), 201
+
+
+def delete_chit(chit_id):
+    response = {"message": ""}
+    chit = db.session.execute(db.select(Chit).where(Chit.id == chit_id)).scalar()
+    if not chit:
+        response["message"] = f"Chit with ID {chit_id} does not exist"
+        return response, 404
+
+    db.session.delete(chit)
+    db.session.commit()
+    response["message"] = f"Chit {chit_id} deleted successfully"
+    return response, 200
