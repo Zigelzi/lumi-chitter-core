@@ -4,7 +4,7 @@ from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
-from api.config import DevConfig
+from api.src.config import DevConfig
 
 app = Flask(__name__)
 app.config.from_object(DevConfig)
