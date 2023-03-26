@@ -1,6 +1,7 @@
 from flask.cli import FlaskGroup
 from src import create_app, db
 from src.chits.models import Chit
+from src.users.models import User
 
 app = create_app()
 

@@ -18,5 +18,5 @@ def create_app(script_info=None):
 def register_extensions(app):
     db.init_app(app)
     ma.init_app(app)
-    migrate.init_app(app)
+    migrate.init_app(app, db)
     cors.init_app(app)

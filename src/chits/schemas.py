@@ -1,6 +1,6 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
-from src import db, ma
+from src import db
 from src.chits.models import Chit
 
 

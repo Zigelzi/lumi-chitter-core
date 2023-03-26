@@ -8,8 +8,8 @@ Model = db.Model
 class Chit(Model):
     id = Column(db.Integer, primary_key=True)
     content = Column(db.String, nullable=False)
-    # user_id = Column(db.Integer, db.ForeignKey("user.id"))
-    created_at = Column(db.DateTime, default=datetime.now(timezone.utc), nullable=False)
+    user_id = Column(db.Integer, db.ForeignKey("user.id"))
+    created_at = Column(db.DateTime, default=datetime.utcnow(), nullable=False)
 
     def save(self):
         db.session.add(self)
