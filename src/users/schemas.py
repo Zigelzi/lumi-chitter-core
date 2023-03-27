@@ -1,6 +1,6 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
-from src.api import db
+from src import db
 from src.users.models import User
 
 
@@ -9,3 +9,6 @@ class UserSchema(SQLAlchemyAutoSchema):
         model = User
         load_instance = True
         sqla_session = db.session
+
+
+user_schema = UserSchema()
