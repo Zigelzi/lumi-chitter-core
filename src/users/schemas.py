@@ -12,3 +12,4 @@ class UserSchema(SQLAlchemyAutoSchema):
 
 
 user_schema = UserSchema()
+user_list_schema = UserSchema(many=True)
